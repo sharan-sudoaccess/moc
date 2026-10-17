@@ -1,0 +1,9 @@
+# Runtime dependencies (API + dashboard). Tested with the versions noted in
+# docs/verification.md on Python 3.13; ranges allow Python 3.10+.
+fastapi>=0.110,<1.0
+uvicorn>=0.27,<1.0
+pydantic>=2.6,<3.0
+streamlit>=1.50,<2.0
+pandas>=2.0,<4.0
+plotly>=5.18,<8.0
+requests>=2.31,<3.0

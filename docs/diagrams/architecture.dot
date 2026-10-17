@@ -1,0 +1,48 @@
+// Architecture of the AI Prompt Injection Detector (DFA).
+// Render:  dot -Tpng -Gdpi=150 docs/diagrams/architecture.dot -o docs/diagrams/architecture.png
+digraph architecture {
+  graph [rankdir=TB fontname="Helvetica" bgcolor="white" pad=0.4 nodesep=0.35 ranksep=0.45 newrank=true];
+  node  [shape=box style="rounded,filled" fontname="Helvetica" fontsize=11 fillcolor="#F4F6F9" color="#5B6B82" margin="0.18,0.08"];
+  edge  [fontname="Helvetica" fontsize=9 color="#5B6B82"];
+
+  user      [label="User / reviewer" shape=ellipse fillcolor="#FFFFFF"];
+  dashboard [label="Streamlit dashboard  (app.py, dashboard/)\nOverview · Analyzer · DFA view · Rules · Test Lab · Evaluation · Status" fillcolor="#E3F2FD" color="#1E6FA8"];
+  curl      [label="curl / other clients" shape=ellipse fillcolor="#FFFFFF"];
+
+  subgraph cluster_api {
+    label="FastAPI service  (src/api.py)  —  request ID · API key · rate limit · size limits · security headers · CORS";
+    fontname="Helvetica"; fontsize=10; color="#1E6FA8"; style="rounded,dashed";
+    validation [label="1. Input validation\n(type, empty, length)  normalization.validate_input"];
+    norm       [label="2–3. Normalization & tokenization\nNFKD · casefold · homoglyphs · zero-width · offsets"];
+    dfa        [label="4. DFA-based detection engine\nTokenAutomaton: M = (Q, Σ, δ, q0, F)\none table lookup per token" fillcolor="#FFF3E0" color="#C77700" penwidth=1.6];
+    matches    [label="Pattern matches\n(rule, category, severity, evidence span)" shape=note fillcolor="#FFFFFF"];
+    trace      [label="State trace\nδ(q, a) = q' per token" shape=note fillcolor="#FFFFFF"];
+    scoring    [label="5–6. Risk scoring & policy engine\nnoisy-OR over categories · thresholds  (src/scoring.py)"];
+    allow [label="ALLOW" fillcolor="#E8F5E9" color="#2E7D32" fontcolor="#2E7D32"];
+    flag  [label="FLAG"  fillcolor="#FFFDE7" color="#B59B00" fontcolor="#8A7400"];
+    block [label="BLOCK" fillcolor="#FFEBEE" color="#C62828" fontcolor="#C62828"];
+    report [label="7. Structured response\n(DetectResponse JSON)"];
+    { rank=same; matches; trace; }
+    { rank=same; allow; flag; block; }
+  }
+
+  rules    [label="config/patterns.json\n(rules, ignorable tokens)" shape=cylinder fillcolor="#FFFFFF"];
+  policies [label="config/policies.json\n(weights, bands, policies)" shape=cylinder fillcolor="#FFFFFF"];
+  audit    [label="Audit log  logs/audit.jsonl\nmetadata + SHA-256, no raw text, rotated" shape=cylinder fillcolor="#FFFFFF"];
+  metrics  [label="In-memory metrics\n/v1/metrics" shape=cylinder fillcolor="#FFFFFF"];
+  evalset  [label="evaluation/corpus.json\n→ precision · recall · F1" shape=cylinder fillcolor="#FFFFFF"];
+
+  user -> dashboard;
+  dashboard -> validation [label=" HTTP JSON\n POST /v1/detect"];
+  curl -> validation;
+  validation -> norm -> dfa;
+  dfa -> matches; dfa -> trace;
+  matches -> scoring;
+  scoring -> allow; scoring -> flag; scoring -> block;
+  allow -> report; flag -> report; block -> report; trace -> report [style=dashed label=" if include_trace"];
+  report -> dashboard [label=" response" constraint=false color="#1E6FA8"];
+  report -> audit; report -> metrics;
+  rules -> dfa [style=dashed label=" compiled at start-up\n / on validated rule change"];
+  policies -> scoring [style=dashed];
+  evalset -> scoring [style=dashed label=" GET /v1/evaluation\n evaluation/evaluate.py"];
+}

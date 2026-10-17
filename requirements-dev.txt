@@ -1,0 +1,5 @@
+# Test / documentation tooling (not needed to run the application).
+-r requirements.txt
+pytest>=8.0,<10.0
+httpx>=0.27,<1.0
+matplotlib>=3.8,<4.0

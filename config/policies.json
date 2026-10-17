@@ -1,0 +1,35 @@
+{
+  "severity_weights": {
+    "low": 0.15,
+    "medium": 0.35,
+    "high": 0.60,
+    "critical": 0.85
+  },
+  "risk_levels": [
+    {"name": "LOW", "min_score": 0},
+    {"name": "MEDIUM", "min_score": 30},
+    {"name": "HIGH", "min_score": 60},
+    {"name": "CRITICAL", "min_score": 85}
+  ],
+  "default_policy": "balanced",
+  "policies": {
+    "strict": {
+      "description": "Any match is flagged; high or critical severity, or a score >= 50, is blocked.",
+      "flag_threshold": 0.1,
+      "block_threshold": 50,
+      "block_on_severities": ["high", "critical"]
+    },
+    "balanced": {
+      "description": "Any match is flagged; critical severity or a score >= 80 is blocked.",
+      "flag_threshold": 0.1,
+      "block_threshold": 80,
+      "block_on_severities": ["critical"]
+    },
+    "monitor": {
+      "description": "Observe only: never blocks; flags scores >= 30, lower-scoring matches are allowed but still reported.",
+      "flag_threshold": 30,
+      "block_threshold": null,
+      "block_on_severities": []
+    }
+  }
+}

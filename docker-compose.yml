@@ -1,0 +1,39 @@
+# Optional containerised deployment:  docker compose up --build
+#   API:        http://localhost:8000   (docs at /docs)
+#   Dashboard:  http://localhost:8501
+services:
+  api:
+    build: .
+    image: pi-dfa:latest
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      CORS_ORIGINS: "http://localhost:8501,http://127.0.0.1:8501"
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      # Named volume: keeps the audit log across restarts and is writable by
+      # the container's non-root user (a host bind mount may not be).
+      - audit-logs:/app/logs
+    restart: unless-stopped
+
+  dashboard:
+    image: pi-dfa:latest
+    depends_on:
+      api:
+        condition: service_healthy
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      API_URL: "http://api:8000"
+    command: ["streamlit", "run", "app.py", "--server.address=0.0.0.0", "--server.port=8501"]
+    healthcheck:
+      disable: true
+    ports:
+      - "127.0.0.1:8501:8501"
+    restart: unless-stopped
+
+volumes:
+  audit-logs:

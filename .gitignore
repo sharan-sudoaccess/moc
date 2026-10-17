@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+
+# Local configuration and secrets
+.env
+
+# Runtime output
+logs/
+evaluation/results.json
+
+# Build artefacts
+dist/
+*.zip
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store

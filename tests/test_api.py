@@ -28,6 +28,14 @@ def test_health(client):
     assert body["status"] == "ok" and body["detector_version"] == "1.0.0"
 
 
+def test_root_is_not_404(client):
+    r = client.get("/")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["status"] == "ok" and body["docs"] == "/docs"
+    assert body["endpoints"]["detect"] == "POST /v1/detect"
+
+
 def test_ready(client):
     r = client.get("/ready")
     assert r.status_code == 200

@@ -7,10 +7,10 @@ Everything listed as **verified** was executed in the development environment on
 
 | Item | How it was verified | Result |
 |---|---|---|
-| Automated tests | `python -m pytest` | **155 passed, 0 failed** (Python 3.13.16) |
-| Clean install path | Fresh copy of the project → `./run_local.sh setup` → `./run_local.sh test` | Installed from `requirements-dev.txt`; **155 passed** |
-| Python 3.11 compatibility | Fresh Python 3.11.17 venv, `pip install -r requirements-dev.txt`, pytest | **155 passed** |
-| Tests can fail | Deliberately broke the failure-function construction in `automaton.py` | 11 tests failed; restored → 155 passed |
+| Automated tests | `python -m pytest` | **156 passed, 0 failed** (Python 3.13.16) |
+| Clean install path | Fresh copy of the project → `./run_local.sh setup` → `./run_local.sh test` | Installed from `requirements-dev.txt`; **155 passed** (run before the `/` route and its test were added) |
+| Python 3.11 compatibility | Fresh Python 3.11.17 venv, `pip install -r requirements-dev.txt`, pytest | **156 passed** |
+| Tests can fail | Deliberately broke the failure-function construction in `automaton.py` | 11 tests failed; restored → all passed (155 at the time; the `/` route test was added later) |
 | DFA correctness | `tests/test_automaton.py`: totality of δ, BFS numbering, failure links vs. brute-force suffix definition, equivalence to naive matching on 2,000 random token strings | pass |
 | API endpoints | uvicorn on 127.0.0.1:8000, curl requests (outputs in `docs/demo_guide.md`) | as documented |
 | Dashboard | Streamlit on 127.0.0.1:8501, driven by headless Chromium (Playwright): every page opened, Test Lab "Run all", Analyzer, DFA trace, rule toggle, add-rule form | No Streamlit exceptions on any page. Screenshots in `docs/screenshots/` are from these runs |
@@ -28,7 +28,7 @@ streamlit 1.66.0, pandas 3.0.6, plotly 7.1.0, requests 2.34.2, pytest 9.1.1, htt
 
 | Claim or assumption | Status |
 |---|---|
-| Runs on a physical Ubuntu laptop | Not tested on real Ubuntu hardware. Tested in a Linux container (Ubuntu userland, Python 3.11 and 3.13). Python 3.10 was not tested; the code avoids 3.11+ syntax |
+| Runs on a physical Ubuntu laptop | Partly confirmed by the project author: `./run_local.sh setup` and `./run_local.sh api` succeeded on their laptop (Python 3.12, fastapi 0.161, starlette 1.9; from a terminal screenshot). The dashboard and test suite on that machine have not been reported yet. Python 3.10 was not tested |
 | `docker compose up --build` with the **unmodified** Dockerfile on a normal network | Not run here (sandbox TLS interception, see above). Expected to work, since it is a standard `pip install` |
 | Minimum dependency versions in `requirements.txt` (e.g. streamlit 1.50, fastapi 0.110) | Only the latest versions were installed and tested. Older versions within the ranges are untested |
 | Swagger UI at `/docs` | Depends on CDN assets; not checked offline |

@@ -223,6 +223,24 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     protected = [Depends(require_api_key), Depends(rate_limit)]
 
     # ---------------------------------------------------------------- routes
+    @app.get("/", tags=["status"])
+    def index() -> dict[str, Any]:
+        """Landing response so opening the base URL in a browser is not a 404."""
+        return {
+            "service": "AI Prompt Injection Detector (DFA)",
+            "status": "ok",
+            "detector_version": DETECTOR_VERSION,
+            "docs": "/docs",
+            "endpoints": {
+                "health": "GET /health",
+                "ready": "GET /ready",
+                "detect": "POST /v1/detect",
+                "patterns": "GET /v1/patterns",
+                "metrics": "GET /v1/metrics",
+            },
+            "dashboard": "Run ./run_local.sh dashboard and open http://127.0.0.1:8501",
+        }
+
     @app.get("/health", tags=["status"])
     def health() -> dict[str, Any]:
         return {

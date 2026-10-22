@@ -8,7 +8,7 @@ recorded. Matches are explained with evidence, scored, and turned into a recomme
 **ALLOW / FLAG / BLOCK** action.
 
 * FastAPI REST service, Streamlit security dashboard, JSON-configured rules
-* 155 automated tests, a labeled evaluation corpus and metrics script
+* 156 automated tests, a labeled evaluation corpus and metrics script
 * No LLM, no paid API, and no internet connection needed at runtime
 
 > **What it is not.** It detects a *predefined regular subset* of prompt-injection
@@ -87,7 +87,7 @@ streamlit run app.py                                 # terminal 2 (venv activate
 ## 2. Tests and evaluation
 
 ```bash
-./run_local.sh test                 # pytest: 155 tests
+./run_local.sh test                 # pytest: 156 tests
 ./run_local.sh eval                 # metrics on all 90 labeled examples
 ./run_local.sh eval --split heldout --rows
 ./run_local.sh eval --policy strict --positive-on block --json evaluation/results.json
@@ -165,6 +165,7 @@ Architecture diagram and data flow: **[docs/architecture.md](docs/architecture.m
 
 | Method | Path | Purpose |
 |---|---|---|
+| GET | `/` | Service info and links (what a browser shows at the base URL) |
 | GET | `/health` | Liveness (no auth) |
 | GET | `/ready` | Rules loaded, automaton built, policies loaded, audit log writable (200/503) |
 | POST | `/v1/detect` | `{"text": str, "policy"?: str, "include_trace"?: bool}` → detection result |
@@ -261,7 +262,7 @@ src/evaluation.py       confusion matrix, precision/recall/F1/accuracy
 src/models.py, config.py  API schemas; settings from environment
 config/                 patterns.json (19 rules, 219 patterns), policies.json
 evaluation/             corpus.json (90 labeled examples), evaluate.py (CLI)
-tests/                  155 pytest tests (automaton theory, detector, scoring, API, audit)
+tests/                  156 pytest tests (automaton theory, detector, scoring, API, audit)
 tools/worked_example.py regenerates the MOC report's tables and teaching diagram
 docs/                   MOC report, architecture, threat model, limitations, demo guide,
                         verification record, diagrams, screenshots
@@ -286,6 +287,7 @@ The files to read first for the review: `src/automaton.py` (the theory),
 | Symptom | Fix |
 |---|---|
 | `python3 -m venv` fails: *ensurepip is not available* | `sudo apt install python3-venv` (or `python3.X-venv` for your version) |
+| Browser shows **404 Not Found** at http://127.0.0.1:8000/ | You are on an older copy without the `/` route; the API is still fine. Open `/health` or `/docs`, and start the dashboard (port 8501) in a second terminal |
 | Dashboard shows **API offline** | Start the API first (`./run_local.sh api`), and check `API_URL` in `.env` |
 | `Address already in use` | Another process uses 8000/8501: `ss -ltnp \| grep -E '8000\|8501'`, or `API_PORT=8001 ./run_local.sh api` together with `API_URL=http://127.0.0.1:8001` |
 | Dashboard: *Missing or invalid X-API-Key* | Same `API_KEY` must be in the environment of both the API and the dashboard (`.env`) |

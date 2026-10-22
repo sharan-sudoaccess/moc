@@ -36,10 +36,18 @@ sudo apt update && sudo apt install -y python3 python3-venv python3-pip curl unz
 unzip ai-prompt-injection-dfa.zip        # or: git clone <repo-url>
 cd ai-prompt-injection-dfa
 
-./run_local.sh setup                     # creates .venv, installs deps, creates .env
+./start.sh
 ```
 
-Start the API and the dashboard in **two terminals**:
+**`./start.sh` does everything in one terminal, every time:** it checks Python,
+creates or repairs `.venv`, installs dependencies, creates `.env` if missing, runs
+the tests, stops old instances on ports 8000/8501, starts the API and the
+dashboard, waits until both respond, and opens http://127.0.0.1:8501. Ctrl+C stops
+both. Options: `--skip-tests` (faster start) and `--no-browser`. Logs go to
+`logs/api.log` and `logs/dashboard.log`.
+
+Alternatively, set up once with `./run_local.sh setup` and start the API and the
+dashboard in **two terminals**:
 
 ```bash
 # Terminal 1 — API on http://127.0.0.1:8000

@@ -28,11 +28,11 @@ streamlit 1.66.0, pandas 3.0.6, plotly 7.1.0, requests 2.34.2, pytest 9.1.1, htt
 
 | Claim or assumption | Status |
 |---|---|
-| Runs on a physical Ubuntu laptop | Partly confirmed by the project author: `./run_local.sh setup` and `./run_local.sh api` succeeded on their laptop (Python 3.12, fastapi 0.161, starlette 1.9; from a terminal screenshot). The dashboard and test suite on that machine have not been reported yet. Python 3.10 was not tested |
+| Runs on a physical Ubuntu laptop | Partly confirmed by the project team: `./run_local.sh setup` and `./run_local.sh api` succeeded on a team member's laptop (Python 3.12, fastapi 0.161, starlette 1.9; from a terminal screenshot). The dashboard and test suite on that machine have not been reported yet. Python 3.10 was not tested |
 | `docker compose up --build` with the **unmodified** Dockerfile on a normal network | Not run here (sandbox TLS interception, see above). Expected to work, since it is a standard `pip install` |
 | Minimum dependency versions in `requirements.txt` (e.g. streamlit 1.50, fastapi 0.110) | Only the latest versions were installed and tested. Older versions within the ranges are untested |
 | Swagger UI at `/docs` | Depends on CDN assets; not checked offline |
 | Rate limiting under concurrency / multiple workers | Only single-process behaviour is tested |
 | Performance figures | Single-request timings (≈0.3–0.9 ms per detect in-process) were observed. No load test or benchmark was done |
-| Real-world detection effectiveness | **Unknown.** The corpus is small and written by the rule author; metrics are illustrative |
+| Real-world detection effectiveness | **Unknown.** The corpus is small and was written by the same team that wrote the rules; metrics are illustrative |
 | Production readiness | **Not claimed.** No security review, no TLS, no centralized logging, no load testing |
